@@ -3,17 +3,24 @@ Spotify Web API SDK built with native Unreal Engine wrappers and is event-driven
 
 Note: The current SDK does not provide any logic on creating authentication tokens. This requires an intermediate step with a web-url callback. However there is support on Client Id and Client Secret to get you started with parsing data to a Launch URL.
 
-# How to call the plugin
+# Usage
 
-Once you've included the module in your Build.cs, you can call the module with:
+First clone the plugin into your `Plugins` directory. Then you need to edit your Build.cs and add the following:
+
+```
+PrivateDependencyModuleNames.AddRange(new string[] { "HTTP", "Json", "JsonUtilities", "SpotifySDK"});
+```
+
+Once you've included the module in your Build.cs, you can call the module at any point during game execution.
 
 ```
 SpotifySDKModule = &FSpotifySDKModule::Get();
 ```
+Note: The module is set to load at runtime so be please ensure to validate the module lifetime if integrating with other modules.
+
 
 Before calling any functions, you must set the authorization bearer token. The [Spotify Docs](https://developer.spotify.com/documentation/web-api/tutorials/code-flow) has instructions in how to facilitiate the token.
-
-It is not recommended, but if you wish to set Client Id and Client Secret values, you may do so in `SpotifyAuth.h` and you can call these functions as follows:
+It is not recommended, but if you wish to set Client Id / Client Secret values, you may do so in `SpotifyAuth.h` and you can call these functions as follows:
 
 ```
 SpotifySDKModule->GetClientId();

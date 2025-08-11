@@ -1,5 +1,5 @@
-# SpotifySDK--UE5
-Spotify Web API SDK built with native Unreal Engine wrappers
+# (WIP) SpotifySDK--UE5
+Spotify Web API SDK built with native Unreal Engine wrappers and is event-driven (delegate system)
 
 Note: The current SDK does not provide any logic on creating authentication tokens. This requires an intermediate step with a web-url callback. However there is support on Client Id and Client Secret to get you started with parsing data to a Launch URL.
 
@@ -12,6 +12,15 @@ SpotifySDKModule = &FSpotifySDKModule::Get();
 ```
 
 Before calling any functions, you must set the authorization bearer token. The [Spotify Docs](https://developer.spotify.com/documentation/web-api/tutorials/code-flow) has instructions in how to facilitiate the token.
+
+It is not recommended, but if you wish to set Client Id and Client Secret values, you may do so in `SpotifyAuth.h` and you can call these functions as follows:
+
+```
+SpotifySDKModule->GetClientId();
+SpotifySDKModule->GetClientSecret();
+```
+
+
 Once you have obtained the token, simply call the `UpdateSpotifyToken()` function.
 
 ```

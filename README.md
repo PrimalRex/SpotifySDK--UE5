@@ -11,7 +11,14 @@ Once you've included the module in your Build.cs, you can call the module with:
 SpotifySDKModule = &FSpotifySDKModule::Get();
 ```
 
-You can then call functions to the module directly. All operations are thread-safe and uses a event-driven system:
+Before calling any functions, you must set the authorization bearer token. The [Spotify Docs](https://developer.spotify.com/documentation/web-api/tutorials/code-flow) has instructions in how to facilitiate the token.
+Once you have obtained the token, simply call the `UpdateSpotifyToken()` function.
+
+```
+SpotifySDKModule->UpdateSpotifyUserToken("ABCDEFToken");
+```
+
+You can then call any endpoint functions. All operations are thread-safe and uses a event-driven system:
 
 ```
 SpotifySDKModule->RequestTrackPreviewUrl(TEXT("1G1ZxaxFZQI9DArt6UzlrF"), [&](const FString& PreviewUrl)
@@ -20,4 +27,4 @@ SpotifySDKModule->RequestTrackPreviewUrl(TEXT("1G1ZxaxFZQI9DArt6UzlrF"), [&](con
   });
 ```
 
-The under-the-hood uses the HTTP thread to asynchronously dispatch calls and uses a delegate binding for when the response has been returned.
+Under-the-hood it uses the HTTP thread to asynchronously dispatch calls and uses a delegate binding for when the response has been returned.

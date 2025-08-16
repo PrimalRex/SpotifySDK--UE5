@@ -52,8 +52,7 @@ public:
 		return false;
 	}
 
-	static bool GetObjectEntry(const TSharedPtr<FJsonValue>& ResponseValue, const FString& ObjectName,
-	                           TSharedPtr<FJsonObject>& OutValue)
+	static bool GetObjectEntry(const TSharedPtr<FJsonValue>& ResponseValue, const FString& ObjectName, TSharedPtr<FJsonObject>& OutValue)
 	{
 		TSharedPtr<FJsonObject> JsonObject = ResponseValue->AsObject();
 
@@ -71,8 +70,7 @@ public:
 		return false;
 	}
 
-	static bool GetObjectEntry(const TSharedPtr<FJsonObject>& ResponseObject, const FString& ObjectName,
-	                           TSharedPtr<FJsonObject>& OutValue)
+	static bool GetObjectEntry(const TSharedPtr<FJsonObject>& ResponseObject, const FString& ObjectName, TSharedPtr<FJsonObject>& OutValue)
 	{
 		if (!ResponseObject.IsValid())
 		{
@@ -88,8 +86,7 @@ public:
 		return false;
 	}
 
-	static bool GetArrayEntry(const FString& ResponseString, const FString& ArrayName,
-	                          TArray<TSharedPtr<FJsonValue>>& OutValue)
+	static bool GetArrayEntry(const FString& ResponseString, const FString& ArrayName, TArray<TSharedPtr<FJsonValue>>& OutValue)
 	{
 		TSharedPtr<FJsonObject> JsonObject;
 
@@ -102,8 +99,7 @@ public:
 		return false;
 	}
 
-	static bool GetArrayEntry(const TSharedPtr<FJsonValue>& ResponseValue, const FString& ArrayName,
-	                          TArray<TSharedPtr<FJsonValue>>& OutValue)
+	static bool GetArrayEntry(const TSharedPtr<FJsonValue>& ResponseValue, const FString& ArrayName, TArray<TSharedPtr<FJsonValue>>& OutValue)
 	{
 		TSharedPtr<FJsonObject> JsonObject = ResponseValue->AsObject();
 
@@ -121,8 +117,7 @@ public:
 		return false;
 	}
 
-	static bool GetArrayEntry(const TSharedPtr<FJsonObject>& ResponseObject, const FString& ArrayName,
-	                          TArray<TSharedPtr<FJsonValue>>& OutValue)
+	static bool GetArrayEntry(const TSharedPtr<FJsonObject>& ResponseObject, const FString& ArrayName, TArray<TSharedPtr<FJsonValue>>& OutValue)
 	{
 		if (!ResponseObject.IsValid())
 		{
@@ -138,8 +133,7 @@ public:
 		return false;
 	}
 
-	static bool GetFieldEntryAtIndex(const TArray<TSharedPtr<FJsonValue>>& JsonArray, const FString& FieldName,
-	                                 const int32 Index, FString& OutValue)
+	static bool GetFieldEntryAtIndex(const TArray<TSharedPtr<FJsonValue>>& JsonArray, const FString& FieldName, const int32 Index, FString& OutValue)
 	{
 		if (!JsonArray.IsValidIndex(Index))
 		{

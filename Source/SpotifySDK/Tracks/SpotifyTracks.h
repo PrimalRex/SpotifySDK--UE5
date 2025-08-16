@@ -64,8 +64,7 @@ public:
 					if (StartIndex != -1)
 					{
 						StartIndex += SearchKey.Len();
-						int32 EndIndex = ResponseStr.Find(TEXT("\""), ESearchCase::IgnoreCase, ESearchDir::FromStart,
-						                                  StartIndex);
+						int32 EndIndex = ResponseStr.Find(TEXT("\""), ESearchCase::IgnoreCase, ESearchDir::FromStart, StartIndex);
 
 						if (EndIndex != -1 && EndIndex > StartIndex)
 						{

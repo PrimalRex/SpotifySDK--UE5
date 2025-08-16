@@ -48,8 +48,7 @@ public:
 	 * @param LimitOffset A pair containing the limit and offset for pagination.
 	 * @param Callback A function that will be called with the retrieved playlists.
 	 */
-	static void RequestUserPlaylists(const FString& UserToken, const FString& UserId, const TPair<int, int> LimitOffset,
-	                                 TFunction<void(const TArray<FPlaylistProfile>& Playlists)> Callback)
+	static void RequestUserPlaylists(const FString& UserToken, const FString& UserId, const TPair<int, int> LimitOffset, TFunction<void(const TArray<FPlaylistProfile>& Playlists)> Callback)
 	{
 		TSharedRef<TArray<FPlaylistProfile>> Playlists = MakeShareable(new TArray<FPlaylistProfile>());
 		TSharedPtr<TFunction<void(TPair<int, int>)>> ExpandProfile = MakeShared<TFunction<void(TPair<int, int>)>>();
@@ -106,9 +105,7 @@ public:
 	 * Internal implementation of the RequestUserPlaylists function.
 	 * This function is used to make the actual HTTP request.
 	 */
-	static void RequestUserPlaylistsImpl(const FString& UserToken, const FString& UserId,
-	                                     const TPair<int, int> LimitOffset,
-	                                     TFunction<void(const FString& Response)> Callback)
+	static void RequestUserPlaylistsImpl(const FString& UserToken, const FString& UserId, const TPair<int, int> LimitOffset, TFunction<void(const FString& Response)> Callback)
 	{
 		FString BaseUrl = FString::Printf(
 			TEXT("https://api.spotify.com/v1/users/%s/playlists?limit=%d&offset=%d"),
@@ -150,9 +147,7 @@ public:
 	 * @param LimitOffset A pair containing the limit and offset for pagination.
 	 * @param Callback A function that will be called with the retrieved playlist tracks struct.
 	 */
-	static void RequestPlaylistTracks(const FString& UserToken, const FString& PlaylistId,
-	                                  const TPair<int, int> LimitOffset,
-	                                  TFunction<void(const FPlaylistData& PlaylistData)> Callback)
+	static void RequestPlaylistTracks(const FString& UserToken, const FString& PlaylistId, const TPair<int, int> LimitOffset, TFunction<void(const FPlaylistData& PlaylistData)> Callback)
 	{
 		TSharedRef<FPlaylistData> PlaylistData = MakeShareable(new FPlaylistData());
 		TSharedPtr<TFunction<void(TPair<int, int>)>> ExpandPlaylist = MakeShared<TFunction<void(TPair<int, int>)>>();
@@ -233,9 +228,7 @@ public:
 	 * Internal implementation of the RequestPlaylistTracks function.
 	 * This function is used to make the actual HTTP request.
 	 */
-	static void RequestPlaylistTracksImpl(const FString& UserToken, const FString& PlaylistId,
-	                                      const TPair<int, int> LimitOffset,
-	                                      TFunction<void(const FString& Response)> Callback)
+	static void RequestPlaylistTracksImpl(const FString& UserToken, const FString& PlaylistId, const TPair<int, int> LimitOffset, TFunction<void(const FString& Response)> Callback)
 	{
 		FString BaseUrl = FString::Printf(
 			TEXT("https://api.spotify.com/v1/playlists/%s/tracks?limit=%d&offset=%d"),

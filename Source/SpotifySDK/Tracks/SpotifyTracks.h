@@ -3,6 +3,28 @@
 #pragma once
 
 #include "RequestUtils.h"
+#include "SpotifyTracks.generated.h"
+
+USTRUCT(BlueprintType)
+struct FTrackProfile
+{
+	GENERATED_BODY()
+public:
+	UPROPERTY(BlueprintReadWrite)
+	FString Name;
+	UPROPERTY(BlueprintReadWrite)
+	FString TrackId;
+	UPROPERTY(BlueprintReadWrite)
+	int DurationMs;
+	UPROPERTY(BlueprintReadWrite)
+	TArray<FString> Artists;
+	UPROPERTY(BlueprintReadWrite)
+	FString AlbumReleaseDate;
+	UPROPERTY(BlueprintReadWrite)
+	FString AlbumId;
+	UPROPERTY(BlueprintReadWrite)
+	FString ImgUrl;
+};
 
 class FSpotifyTracks
 {

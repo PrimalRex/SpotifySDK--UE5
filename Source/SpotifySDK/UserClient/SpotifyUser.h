@@ -26,6 +26,7 @@ public:
 class FSpotifyUser
 {
 public:
+	// https://developer.spotify.com/documentation/web-api/reference/get-current-users-profile
 	static void RequestUserProfile(const FString& UserToken, TFunction<void(const FUserProfile& Profile)> Callback)
 	{
 		FString BaseUrl = TEXT("https://api.spotify.com/v1/me");
@@ -50,12 +51,6 @@ public:
 					TArray<TSharedPtr<FJsonValue>> ImagesArray;
 					FRequestUtils::GetArrayEntry(*ResponseStr, "images", ImagesArray);
 					FRequestUtils::GetFieldEntryAtIndex(ImagesArray, "url", 0, Profile.ImgUrl);
-
-					/*UE_LOG(LogTemp, Error, TEXT("Spotify User Profile: %s"), *Profile.Username);
-					UE_LOG(LogTemp, Error, TEXT("Spotify User ID: %s"), *Profile.UserId);
-					UE_LOG(LogTemp, Error, TEXT("Spotify User Email: %s"), *Profile.Email);
-					UE_LOG(LogTemp, Error, TEXT("Spotify User URI: %s"), *Profile.UserUri);
-					UE_LOG(LogTemp, Error, TEXT("Spotify User Image URL: %s"), *Profile.ImgUrl);*/
 
 					Callback(Profile);
 				}

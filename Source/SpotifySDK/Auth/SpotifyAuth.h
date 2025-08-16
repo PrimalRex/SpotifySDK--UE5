@@ -12,7 +12,7 @@ public:
 	 * Get the Logged-in Spotify User Access Token.
 	 * This token is given after the user has agreed authentication and
 	 * serves as the primary bearer for all higher-level endpoint calls.
-	 * @return A shared reference to the User Token string.
+	 * @return A reference to the User Token string.
 	 */
 	const FString& GetSpotifyUserToken() { return SpotifyUserToken; }
 	void UpdateSpotifyUserToken(const FString& Token) { SpotifyUserToken = Token; }

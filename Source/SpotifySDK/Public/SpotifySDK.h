@@ -28,9 +28,17 @@ public:
 
 	///////////////////////////////////////
 
-	SPOTIFYSDK_API void RequestUserProfile(TFunction<void(const FUserProfile& Profile)> Callback) { FSpotifyUser::RequestUserProfile(GetSpotifyUserToken(), Callback); }
-	SPOTIFYSDK_API void RequestUserPlaylists(const FString& UserId, TFunction<void(const TArray<FPlaylistProfile>& Playlists)> Callback) { FSpotifyPlaylists::RequestUserPlaylists(GetSpotifyUserToken(), UserId, Callback); }
-	SPOTIFYSDK_API void RequestTrackPreviewUrl(const FString& TrackId, TFunction<void(const FString& Url)> Callback) { FSpotifyTracks::RequestTrackPreviewUrl(TrackId, Callback); }
+	SPOTIFYSDK_API void RequestUserProfile(TFunction<void(const FUserProfile& Profile)> Callback)
+		{ FSpotifyUser::RequestUserProfile(GetSpotifyUserToken(), Callback); }
+	
+	SPOTIFYSDK_API void RequestUserPlaylists(const FString& UserId, TFunction<void(const TArray<FPlaylistProfile>& Playlists)> Callback)
+		{ FSpotifyPlaylists::RequestUserPlaylists(GetSpotifyUserToken(), UserId, Callback); }
+	
+	SPOTIFYSDK_API void RequestPlaylistTracks(const FString& PlaylistId, const TPair<int, int> LimitOffset, TFunction<void(const FPlaylistData& PlaylistData)> Callback)
+		{ FSpotifyPlaylists::RequestPlaylistTracks(GetSpotifyUserToken(), PlaylistId, LimitOffset, Callback); }
+	
+	SPOTIFYSDK_API void RequestTrackPreviewUrl(const FString& TrackId, TFunction<void(const FString& Url)> Callback)
+		{ FSpotifyTracks::RequestTrackPreviewUrl(TrackId, Callback); }
 	
 	///////////////////////////////////////
 	

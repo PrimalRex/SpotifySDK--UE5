@@ -50,6 +50,40 @@ public:
 		return false;
 	}
 
+	static bool GetObjectEntry(const TSharedPtr<FJsonValue>& ResponseValue, const FString& ObjectName, TSharedPtr<FJsonObject>& OutValue)
+	{
+		TSharedPtr<FJsonObject> JsonObject = ResponseValue->AsObject();
+
+		if (!JsonObject.IsValid())
+		{
+			return false;
+		}
+
+		if (JsonObject->HasField(ObjectName))
+		{
+			OutValue = JsonObject->GetObjectField(ObjectName);
+			return true;
+		}
+
+		return false;
+	}
+
+	static bool GetObjectEntry(const TSharedPtr<FJsonObject>& ResponseObject, const FString& ObjectName, TSharedPtr<FJsonObject>& OutValue)
+	{
+		if (!ResponseObject.IsValid())
+		{
+			return false;
+		}
+
+		if (ResponseObject->HasField(ObjectName))
+		{
+			OutValue = ResponseObject->GetObjectField(ObjectName);
+			return true;
+		}
+
+		return false;
+	}
+
 	static bool GetArrayEntry(const FString& ResponseString, const FString& ArrayName, TArray<TSharedPtr<FJsonValue>>& OutValue)
 	{
 		TSharedPtr<FJsonObject> JsonObject;
@@ -81,6 +115,22 @@ public:
 		return false;
 	}
 
+	static bool GetArrayEntry(const TSharedPtr<FJsonObject>& ResponseObject, const FString& ArrayName, TArray<TSharedPtr<FJsonValue>>& OutValue)
+	{
+		if (!ResponseObject.IsValid())
+		{
+			return false;
+		}
+
+		if (ResponseObject->HasField(ArrayName))
+		{
+			OutValue = ResponseObject->GetArrayField(ArrayName);
+			return true;
+		}
+
+		return false;
+	}
+
 	static bool GetFieldEntryAtIndex(const TArray<TSharedPtr<FJsonValue>>& JsonArray, const FString& FieldName, const int32 Index, FString& OutValue)
 	{
 		if (!JsonArray.IsValidIndex(Index))
@@ -101,6 +151,29 @@ public:
 		return true;
 	}
 
+	static bool GetFieldEntry(const TSharedPtr<FJsonObject>& JsonObject, const FString& FieldName, FString& OutValue)
+	{
+		if (!JsonObject->HasField(FieldName))
+		{
+			OutValue = TEXT("Error: Field not found");
+			return false;
+		}
+		
+		OutValue = JsonObject->GetStringField(FieldName);
+		return true;
+	}
+
+	static bool GetFieldEntry(const TSharedPtr<FJsonObject>& JsonObject, const FString& FieldName, int& OutValue)
+	{
+		if (!JsonObject->HasField(FieldName))
+		{
+			OutValue = -1;
+			return false;
+		}
+		
+		OutValue = JsonObject->GetIntegerField(FieldName);
+		return true;
+	}
 	
 	static bool GetFieldEntry(const FString& ResponseString, const FString& FieldName, FString& OutValue)
 	{
@@ -136,6 +209,27 @@ public:
 		{
 			OutValue = TEXT("Error");
 			return false;
+		}
+	}
+
+	static bool GetFieldEntry(const TSharedPtr<FJsonValue>& ResponseValue, const FString& FieldName, bool& OutValue)
+	{
+		TSharedPtr<FJsonObject> JsonObject = ResponseValue->AsObject();
+
+		if (!JsonObject.IsValid())
+		{
+			return false;
+		}
+		
+		if (JsonObject->HasField(FieldName))
+		{
+			OutValue = JsonObject->GetBoolField(FieldName);
+			return true;
+		}
+		else
+		{
+			OutValue = false;
+			return OutValue;
 		}
 	}
 

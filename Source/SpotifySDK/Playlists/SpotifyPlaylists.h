@@ -38,12 +38,66 @@ class FSpotifyPlaylists
 {
 public:
 	// https://developer.spotify.com/documentation/web-api/reference/get-list-users-playlists
-	static void RequestUserPlaylists(const FString& UserToken, const FString& UserId, TFunction<void(const TArray<FPlaylistProfile>& Playlists)> Callback)
+	static void RequestUserPlaylists(const FString& UserToken, const FString& UserId, const TPair<int, int> LimitOffset, TFunction<void(const TArray<FPlaylistProfile>& Playlists)> Callback)
 	{
-		// TODO: Temporarily hardcoded to 50 items, should be paginated
+		TSharedRef<TArray<FPlaylistProfile>> Playlists = MakeShareable(new TArray<FPlaylistProfile>());
+		TSharedPtr<TFunction<void(TPair<int, int>)>> ExpandProfile = MakeShared<TFunction<void(TPair<int, int>)>>();
+
+		*ExpandProfile = [=](TPair<int,int> LambdaLimitOffset)
+		{
+			RequestUserPlaylistsImpl(UserToken, UserId, LambdaLimitOffset, [=](const FString& ResponseStr)
+			{
+				int TotalPlaylists;
+				FRequestUtils::GetFieldEntry(*ResponseStr, "total", TotalPlaylists);
+				
+				TArray<TSharedPtr<FJsonValue>> PlaylistsArray;
+				FRequestUtils::GetArrayEntry(*ResponseStr, "items", PlaylistsArray);
+
+				for (const TSharedPtr<FJsonValue>& PlaylistValue : PlaylistsArray)
+				{
+					FPlaylistProfile Profile;
+
+					FRequestUtils::GetFieldEntry(PlaylistValue, "name", Profile.Name);
+					FRequestUtils::GetFieldEntry(PlaylistValue, "description", Profile.Description);
+
+					TSharedPtr<FJsonObject> TrackObject;
+					FRequestUtils::GetObjectEntry(PlaylistValue, "tracks", TrackObject);
+					FRequestUtils::GetFieldEntry(TrackObject, "total", Profile.TrackCount);
+					
+					FRequestUtils::GetFieldEntry(PlaylistValue, "id", Profile.PlaylistId);
+					
+					TArray<TSharedPtr<FJsonValue>> ImagesArray;
+					FRequestUtils::GetArrayEntry(PlaylistValue, "images", ImagesArray);
+					FRequestUtils::GetFieldEntryAtIndex(ImagesArray, "url", 0, Profile.ImgUrl);
+						
+					Playlists->Add(Profile);
+				}
+
+				// Spotify limits the number of tracks returned per request, it is limited to 100 tracks.
+				// So we can check against the reported maximum (total playlists) and keep requesting until
+				// we have all the users' playlists.
+				int CurrentTrackIndex = LambdaLimitOffset.Key + LambdaLimitOffset.Value;
+				if (CurrentTrackIndex < TotalPlaylists)
+				{
+					(*ExpandProfile)(TPair<int, int>(50, CurrentTrackIndex));
+				}
+				else
+				{
+					Callback(*Playlists);
+				}
+			});
+		};
+
+		(*ExpandProfile)(LimitOffset);
+	}
+
+	static void RequestUserPlaylistsImpl(const FString& UserToken, const FString& UserId, const TPair<int, int> LimitOffset, TFunction<void(const FString& Response)> Callback)
+	{
 		FString BaseUrl = FString::Printf(
-			TEXT("https://api.spotify.com/v1/users/%s/playlists?limit=50&offset=0"),
-			*UserId
+			TEXT("https://api.spotify.com/v1/users/%s/playlists?limit=%d&offset=%d"),
+			*UserId,
+			LimitOffset.Key,
+			LimitOffset.Value
 		);
 			
 		TMap<FString, FString> Headers;
@@ -55,33 +109,8 @@ public:
 			{
 				if (bConnectedSuccessfully && Response.IsValid())
 				{
-					TArray<FPlaylistProfile> Playlists;
 					FString ResponseStr = Response->GetContentAsString();
-
-					TArray<TSharedPtr<FJsonValue>> PlaylistsArray;
-					FRequestUtils::GetArrayEntry(*ResponseStr, "items", PlaylistsArray);
-
-					for (const TSharedPtr<FJsonValue>& PlaylistValue : PlaylistsArray)
-					{
-						FPlaylistProfile Profile;
-
-						FRequestUtils::GetFieldEntry(PlaylistValue, "name", Profile.Name);
-						FRequestUtils::GetFieldEntry(PlaylistValue, "description", Profile.Description);
-
-						TSharedPtr<FJsonObject> TrackObject;
-						FRequestUtils::GetObjectEntry(PlaylistValue, "tracks", TrackObject);
-						FRequestUtils::GetFieldEntry(TrackObject, "total", Profile.TrackCount);
-						
-						FRequestUtils::GetFieldEntry(PlaylistValue, "id", Profile.PlaylistId);
-						
-						TArray<TSharedPtr<FJsonValue>> ImagesArray;
-						FRequestUtils::GetArrayEntry(PlaylistValue, "images", ImagesArray);
-						FRequestUtils::GetFieldEntryAtIndex(ImagesArray, "url", 0, Profile.ImgUrl);
-							
-						Playlists.Add(Profile);
-					}
-
-					Callback(Playlists);
+					Callback(ResponseStr);
 				}
 				else
 				{
@@ -154,6 +183,9 @@ public:
 					}
 				}
 
+				// Spotify limits the number of tracks returned per request, it is limited to 100 tracks.
+				// So we can check against the reported maximum (total tracks) and keep requesting until
+				// we have all the tracks.
 				int CurrentTrackIndex = LambdaLimitOffset.Key + LambdaLimitOffset.Value;
 				if (CurrentTrackIndex < TotalTracks)
 				{

@@ -4,10 +4,19 @@
 
 class FSpotifyAuth
 {
-public:	
+public:
+	/**
+	 * Get the Client ID for the Spotify App.
+	 * @return A reference to the Client ID string.
+	 */
 	const FString& GetClientId() { return ClientId; }
+	/**
+	 * Get the Client Secret for the Spotify App.
+	 * This should be kept private and not hardcoded in production code!!!!
+	 * @return A reference to the Client Secret string.
+	 */
 	const FString& GetClientSecret() { return ClientSecret; }
-	
+
 	/**
 	 * Get the Logged-in Spotify User Access Token.
 	 * This token is given after the user has agreed authentication and
@@ -26,4 +35,3 @@ private:
 
 	FString SpotifyUserToken;
 };
-

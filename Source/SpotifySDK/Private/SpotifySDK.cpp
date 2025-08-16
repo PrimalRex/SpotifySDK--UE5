@@ -8,7 +8,7 @@ FSpotifySDKModule* FSpotifySDKModule::Singleton = nullptr;
 
 void FSpotifySDKModule::StartupModule()
 {
-    // This will execute at runtime as soon as the module is loaded into mem
+	// This will execute at runtime as soon as the module is loaded into mem
 	Singleton = this;
 }
 
@@ -18,5 +18,5 @@ void FSpotifySDKModule::ShutdownModule()
 }
 
 #undef LOCTEXT_NAMESPACE
-	
+
 IMPLEMENT_MODULE(FSpotifySDKModule, SpotifySDK)

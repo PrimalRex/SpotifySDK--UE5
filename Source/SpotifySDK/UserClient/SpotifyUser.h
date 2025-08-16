@@ -10,6 +10,7 @@ USTRUCT(BlueprintType)
 struct FUserProfile
 {
 	GENERATED_BODY()
+
 public:
 	UPROPERTY(BlueprintReadWrite)
 	FString Username;
@@ -26,11 +27,17 @@ public:
 class FSpotifyUser
 {
 public:
-	// https://developer.spotify.com/documentation/web-api/reference/get-current-users-profile
+	/**
+	 * Requests the Spotify user details.
+	 * This function will retrieve the current user's profile information,
+	 * ENDPOINT: https://developer.spotify.com/documentation/web-api/reference/get-current-users-profile
+	 * @param UserToken The access token for the Spotify user.
+	 * @param Callback A function that will be called with the retrieved profile data.
+	 */
 	static void RequestUserProfile(const FString& UserToken, TFunction<void(const FUserProfile& Profile)> Callback)
 	{
 		FString BaseUrl = TEXT("https://api.spotify.com/v1/me");
-		
+
 		TMap<FString, FString> Headers;
 		Headers.Add(TEXT("Authorization"), FString::Printf(TEXT("Bearer %s"), *UserToken));
 		TSharedRef<IHttpRequest> HttpRequest = FRequestUtils::CreateGETRequest(BaseUrl, Headers);
@@ -42,7 +49,7 @@ public:
 				{
 					FUserProfile Profile;
 					FString ResponseStr = Response->GetContentAsString();
-					
+
 					FRequestUtils::GetFieldEntry(*ResponseStr, "display_name", Profile.Username);
 					FRequestUtils::GetFieldEntry(*ResponseStr, "id", Profile.UserId);
 					FRequestUtils::GetFieldEntry(*ResponseStr, "email", Profile.Email);

@@ -12,15 +12,17 @@
 class FSpotifySDKModule : public IModuleInterface
 {
 public:
-
 	/** IModuleInterface implementation */
 	SPOTIFYSDK_API virtual void StartupModule() override;
 	SPOTIFYSDK_API virtual void ShutdownModule() override;
 
-	static SPOTIFYSDK_API FSpotifySDKModule& Get() { return Singleton ? *Singleton : FModuleManager::LoadModuleChecked<FSpotifySDKModule>("SpotifySDK"); }
+	static SPOTIFYSDK_API FSpotifySDKModule& Get()
+	{
+		return Singleton ? *Singleton : FModuleManager::LoadModuleChecked<FSpotifySDKModule>("SpotifySDK");
+	}
 
 	///////////////////////////////////////
-	
+
 	SPOTIFYSDK_API const FSpotifyAuth& GetSpotifyAuth() const { return *SpotifyAuth; }
 	SPOTIFYSDK_API FSpotifyAuth& GetSpotifyAuth() { return *SpotifyAuth; }
 
@@ -29,22 +31,33 @@ public:
 	///////////////////////////////////////
 
 	SPOTIFYSDK_API void RequestUserProfile(TFunction<void(const FUserProfile& Profile)> Callback)
-		{ FSpotifyUser::RequestUserProfile(GetSpotifyUserToken(), Callback); }
-	
-	SPOTIFYSDK_API void RequestUserPlaylists(const FString& UserId, const TPair<int, int> LimitOffset, const TFunction<void(const TArray<FPlaylistProfile>& Playlists)>& Callback)
-		{ FSpotifyPlaylists::RequestUserPlaylists(GetSpotifyUserToken(), UserId, LimitOffset, Callback); }
-	
-	SPOTIFYSDK_API void RequestPlaylistTracks(const FString& PlaylistId, const TPair<int, int> LimitOffset, const TFunction<void(const FPlaylistData& PlaylistData)>& Callback)
-		{ FSpotifyPlaylists::RequestPlaylistTracks(GetSpotifyUserToken(), PlaylistId, LimitOffset, Callback); }
-	
-	SPOTIFYSDK_API void RequestTrackPreviewUrl(const FString& TrackId, const TFunction<void(const FString& Url)>& Callback)
-		{ FSpotifyTracks::RequestTrackPreviewUrl(TrackId, Callback); }
-	
+	{
+		FSpotifyUser::RequestUserProfile(GetSpotifyUserToken(), Callback);
+	}
+
+	SPOTIFYSDK_API void RequestUserPlaylists(const FString& UserId, const TPair<int, int> LimitOffset,
+	                                         const TFunction<void(const TArray<FPlaylistProfile>& Playlists)>& Callback)
+	{
+		FSpotifyPlaylists::RequestUserPlaylists(GetSpotifyUserToken(), UserId, LimitOffset, Callback);
+	}
+
+	SPOTIFYSDK_API void RequestPlaylistTracks(const FString& PlaylistId, const TPair<int, int> LimitOffset,
+	                                          const TFunction<void(const FPlaylistData& PlaylistData)>& Callback)
+	{
+		FSpotifyPlaylists::RequestPlaylistTracks(GetSpotifyUserToken(), PlaylistId, LimitOffset, Callback);
+	}
+
+	SPOTIFYSDK_API void RequestTrackPreviewUrl(const FString& TrackId,
+	                                           const TFunction<void(const FString& Url)>& Callback)
+	{
+		FSpotifyTracks::RequestTrackPreviewUrl(TrackId, Callback);
+	}
+
 	///////////////////////////////////////
-	
+
 	SPOTIFYSDK_API const FString& GetClientId() { return GetSpotifyAuth().GetClientId(); }
 	SPOTIFYSDK_API const FString& GetClientSecret() { return GetSpotifyAuth().GetClientSecret(); }
-	
+
 	/**
 	 * Get the Logged-in Spotify User Access Token.
 	 * This token is given after the user has agreed authentication and

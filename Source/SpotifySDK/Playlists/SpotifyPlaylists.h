@@ -89,7 +89,8 @@ public:
 				else
 				{
 					FString ErrorStr = TEXT("Spotify Playlist request failed!!!");
-					UE_LOG(LogTemp, Error, TEXT("Request Error: %s"), *ErrorStr);
+					UE_LOG(LogTemp, Error, TEXT("%s"), *ErrorStr);
+					UE_LOG(LogTemp, Error, TEXT("Request Error: %s"), *Response->GetContentAsString());
 				}
 			}
 		);
@@ -217,7 +218,8 @@ public:
 				else
 				{
 					FString ErrorStr = TEXT("Spotify User Playlists request failed!!!");
-					UE_LOG(LogTemp, Error, TEXT("Request Error: %s"), *ErrorStr);
+					UE_LOG(LogTemp, Error, TEXT("%s"), *ErrorStr);
+					UE_LOG(LogTemp, Error, TEXT("Request Error: %s"), *Response->GetContentAsString());
 				}
 			}
 		);
@@ -340,7 +342,8 @@ public:
 				else
 				{
 					FString ErrorStr = TEXT("Spotify Playlist Tracks request failed!!!");
-					UE_LOG(LogTemp, Error, TEXT("Request Error: %s"), *ErrorStr);
+					UE_LOG(LogTemp, Error, TEXT("%s"), *ErrorStr);
+					UE_LOG(LogTemp, Error, TEXT("Request Error: %s"), *Response->GetContentAsString());
 				}
 			}
 		);

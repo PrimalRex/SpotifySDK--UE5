@@ -79,7 +79,8 @@ public:
 				else
 				{
 					FString ErrorStr = TEXT("Spotify Track Preview Url request failed!!!");
-					UE_LOG(LogTemp, Error, TEXT("Request Error: %s"), *ErrorStr);
+					UE_LOG(LogTemp, Error, TEXT("%s"), *ErrorStr);
+					UE_LOG(LogTemp, Error, TEXT("Request Error: %s"), *Response->GetContentAsString());
 				}
 			}
 		);

@@ -40,6 +40,91 @@ class FSpotifyPlaylists
 {
 public:
 	/**
+	 * Requests the playlist metadata of a Spotify playlist.
+	 * This function will retrieve playlist information.
+	 * ENDPOINT: https://developer.spotify.com/documentation/web-api/reference/get-playlist
+	 * @param UserToken The access token for the Spotify user.
+	 * @param PlaylistId The ID of the Spotify playlist.
+	 * @param Callback A function that will be called with the retrieved playlists.
+	 */
+	static void RequestPlaylist(const FString& UserToken, const FString& PlaylistId, TFunction<void(const FPlaylistProfile& Playlist)> Callback)
+	{
+		FString BaseUrl = FString::Printf(
+			TEXT("https://api.spotify.com/v1/playlists/%s%ls"),
+			*PlaylistId,
+			// We need to specify a field for this query to reduce payload size.
+			// Payload can exceed 10K lines, and can incur performance issues.
+			*FString("?fields=name%2Cid%2Cimages%2Cdescription%2Ctracks%28total%29")
+		);
+
+		TMap<FString, FString> Headers;
+		Headers.Add(TEXT("Authorization"), FString::Printf(TEXT("Bearer %s"), *UserToken));
+		TSharedRef<IHttpRequest> HttpRequest = FRequestUtils::CreateGETRequest(BaseUrl, Headers);
+
+		HttpRequest->OnProcessRequestComplete().BindLambda(
+			[&, Callback](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully)
+			{
+				if (bConnectedSuccessfully && Response.IsValid() && Response->GetResponseCode() == 200)
+				{
+					FPlaylistProfile Profile;
+					FString ResponseStr = Response->GetContentAsString();
+
+					FRequestUtils::GetFieldEntry(*ResponseStr, "name", Profile.Name);
+					FRequestUtils::GetFieldEntry(*ResponseStr, "description", Profile.Description);
+					FRequestUtils::GetFieldEntry(*ResponseStr, "id", Profile.PlaylistId);
+
+					TSharedPtr<FJsonObject> TrackObject;
+					FRequestUtils::GetObjectEntry(*ResponseStr, "tracks", TrackObject);
+					FRequestUtils::GetFieldEntry(TrackObject, "total", Profile.TrackCount);
+
+					TArray<TSharedPtr<FJsonValue>> ImagesArray;
+					FRequestUtils::GetArrayEntry(*ResponseStr, "images", ImagesArray);
+					if (!FRequestUtils::GetFieldEntryAtIndex(ImagesArray, "url", 0, Profile.ImgUrl))
+					{
+						Profile.ImgUrl = TEXT_EMPTY;
+					}
+
+					Callback(Profile);
+				}
+				else
+				{
+					FString ErrorStr = TEXT("Spotify Playlist request failed!!!");
+					UE_LOG(LogTemp, Error, TEXT("Request Error: %s"), *ErrorStr);
+				}
+			}
+		);
+
+		HttpRequest->ProcessRequest();
+	}
+
+	/**
+	 * Requests multiple playlists in a batch.
+	 * This function will retrieve multiple playlists by their IDs.
+	 * @param UserToken The access token for the Spotify user.
+	 * @param PlaylistIds An array of playlist IDs to request.
+	 * @param Callback A function that will be called with the retrieved playlists.
+	 */
+	static void BatchRequestPlaylists(const FString& UserToken, const TArray<FString>& PlaylistIds, TFunction<void(const TArray<FPlaylistProfile>& Playlists)> Callback)
+	{
+		TSharedRef<TArray<FPlaylistProfile>> Playlists = MakeShareable(new TArray<FPlaylistProfile>());
+		TSharedRef<TArray<FString>> RemainingPlaylistIds = MakeShareable(new TArray(PlaylistIds));
+		TSharedPtr<TFunction<void()>> Expand = MakeShared<TFunction<void()>>();
+
+		*Expand = [=]()
+		{
+			FString PlaylistId = RemainingPlaylistIds->Pop();
+			RequestPlaylist(UserToken, PlaylistId, [=](const FPlaylistProfile& Profile)
+			{
+				Playlists->Add(Profile);
+				if (RemainingPlaylistIds->Num() > 0) { (*Expand)(); }
+				else { Callback(*Playlists); }
+			});
+		};
+
+		(*Expand)();
+	}
+
+	/**
 	 * Requests the playlists of a Spotify user.
 	 * This function will retrieve all playlists of the user, handling pagination
 	 * ENDPOINT: https://developer.spotify.com/documentation/web-api/reference/get-list-users-playlists
@@ -78,7 +163,10 @@ public:
 
 					TArray<TSharedPtr<FJsonValue>> ImagesArray;
 					FRequestUtils::GetArrayEntry(PlaylistValue, "images", ImagesArray);
-					FRequestUtils::GetFieldEntryAtIndex(ImagesArray, "url", 0, Profile.ImgUrl);
+					if (!FRequestUtils::GetFieldEntryAtIndex(ImagesArray, "url", 0, Profile.ImgUrl))
+					{
+						Profile.ImgUrl = TEXT_EMPTY;
+					}
 
 					Playlists->Add(Profile);
 				}
@@ -121,7 +209,7 @@ public:
 		HttpRequest->OnProcessRequestComplete().BindLambda(
 			[Callback](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully)
 			{
-				if (bConnectedSuccessfully && Response.IsValid())
+				if (bConnectedSuccessfully && Response.IsValid() && Response->GetResponseCode() == 200)
 				{
 					FString ResponseStr = Response->GetContentAsString();
 					Callback(ResponseStr);
@@ -244,7 +332,7 @@ public:
 		HttpRequest->OnProcessRequestComplete().BindLambda(
 			[&, Callback](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully)
 			{
-				if (bConnectedSuccessfully && Response.IsValid())
+				if (bConnectedSuccessfully && Response.IsValid() && Response->GetResponseCode() == 200)
 				{
 					FString ResponseStr = Response->GetContentAsString();
 					Callback(ResponseStr);

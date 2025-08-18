@@ -10,6 +10,7 @@ class FRequestUtils
 {
 public:
 	// This is a utility class for creating HTTP requests and parsing JSON responses.
+	// TODO: Need to rework how frequently deserialization is called to improve perf.
 
 	static TSharedRef<IHttpRequest> CreatePOSTRequest(const FString& Url, const FString& RequestContent)
 	{
@@ -80,6 +81,25 @@ public:
 		if (ResponseObject->HasField(ObjectName))
 		{
 			OutValue = ResponseObject->GetObjectField(ObjectName);
+			return true;
+		}
+
+		return false;
+	}
+
+	static bool GetObjectEntry(const FString& ResponseString, const FString& ObjectName, TSharedPtr<FJsonObject>& OutValue)
+	{
+		TSharedPtr<FJsonObject> JsonObject;
+		ParseResponseString(ResponseString, JsonObject);
+
+		if (!JsonObject.IsValid())
+		{
+			return false;
+		}
+
+		if (JsonObject->HasField(ObjectName))
+		{
+			OutValue = JsonObject->GetObjectField(ObjectName);
 			return true;
 		}
 

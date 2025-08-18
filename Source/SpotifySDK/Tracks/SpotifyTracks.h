@@ -50,7 +50,7 @@ public:
 		HttpRequest->OnProcessRequestComplete().BindLambda(
 			[Callback](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully)
 			{
-				if (bConnectedSuccessfully && Response.IsValid())
+				if (bConnectedSuccessfully && Response.IsValid() && Response->GetResponseCode() == 200)
 				{
 					FString ResponseStr = Response->GetContentAsString();
 					FString PreviewUrl;

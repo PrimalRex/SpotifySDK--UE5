@@ -35,20 +35,27 @@ public:
 		FSpotifyUser::RequestUserProfile(GetSpotifyUserToken(), Callback);
 	}
 
-	SPOTIFYSDK_API void RequestUserPlaylists(const FString& UserId, const TPair<int, int> LimitOffset,
-	                                         const TFunction<void(const TArray<FPlaylistProfile>& Playlists)>& Callback)
+	SPOTIFYSDK_API void RequestUserPlaylists(const FString& UserId, const TPair<int, int> LimitOffset, const TFunction<void(const TArray<FPlaylistProfile>& Playlists)>& Callback)
 	{
 		FSpotifyPlaylists::RequestUserPlaylists(GetSpotifyUserToken(), UserId, LimitOffset, Callback);
 	}
 
-	SPOTIFYSDK_API void RequestPlaylistTracks(const FString& PlaylistId, const TPair<int, int> LimitOffset,
-	                                          const TFunction<void(const FPlaylistData& PlaylistData)>& Callback)
+	SPOTIFYSDK_API void RequestPlaylist(const FString& PlaylistId, const TFunction<void(const FPlaylistProfile& Playlist)>& Callback)
+	{
+		FSpotifyPlaylists::RequestPlaylist(GetSpotifyUserToken(), PlaylistId, Callback);
+	}
+
+	SPOTIFYSDK_API void BatchRequestPlaylists(const TArray<FString>& PlaylistIds, const TFunction<void(const TArray<FPlaylistProfile>& Playlists)>& Callback)
+	{
+		FSpotifyPlaylists::BatchRequestPlaylists(GetSpotifyUserToken(), PlaylistIds, Callback);
+	}
+
+	SPOTIFYSDK_API void RequestPlaylistTracks(const FString& PlaylistId, const TPair<int, int> LimitOffset, const TFunction<void(const FPlaylistData& PlaylistData)>& Callback)
 	{
 		FSpotifyPlaylists::RequestPlaylistTracks(GetSpotifyUserToken(), PlaylistId, LimitOffset, Callback);
 	}
 
-	SPOTIFYSDK_API void RequestTrackPreviewUrl(const FString& TrackId,
-	                                           const TFunction<void(const FString& Url)>& Callback)
+	SPOTIFYSDK_API void RequestTrackPreviewUrl(const FString& TrackId, const TFunction<void(const FString& Url)>& Callback)
 	{
 		FSpotifyTracks::RequestTrackPreviewUrl(TrackId, Callback);
 	}

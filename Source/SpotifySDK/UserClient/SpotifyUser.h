@@ -45,7 +45,7 @@ public:
 		HttpRequest->OnProcessRequestComplete().BindLambda(
 			[Callback](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully)
 			{
-				if (bConnectedSuccessfully && Response.IsValid())
+				if (bConnectedSuccessfully && Response.IsValid() && Response->GetResponseCode() == 200)
 				{
 					FUserProfile Profile;
 					FString ResponseStr = Response->GetContentAsString();
